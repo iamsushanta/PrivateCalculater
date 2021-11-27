@@ -1,17 +1,25 @@
 package iamzen.`in`.calculator
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import java.math.BigDecimal
 
 class MyViewModel: ViewModel() {
 
     // Variables to hold the operands and type of calculation
-    private var operand1: Double? = null
+    private var operand1: BigDecimal? = null
     private var pendingOperation = "="
 
-    val result = MutableLiveData<String>()
-    val newNumber = MutableLiveData<String>()
-    val operation = MutableLiveData<String>()
+    private val result = MutableLiveData<BigDecimal>()
+    val stringResult:LiveData<String> get() = Transformations.map(result) { it.toString() }
+
+    private val newNumber = MutableLiveData<String>()
+    val stringNewNumber: LiveData<String> get() = newNumber
+
+    private val operation = MutableLiveData<String>()
+    val stringOperation:LiveData<String> get() = operation
 
     fun digitPressed(newValue: String){
         if(newNumber.value != null){
@@ -23,7 +31,7 @@ class MyViewModel: ViewModel() {
 
     fun operandPressed(op:String){
         try {
-            val value = newNumber.value?.toDouble()
+            val value = newNumber.value?.toBigDecimal()
             if(value != null){
                 performOperation(value, op)
             }
@@ -52,7 +60,7 @@ class MyViewModel: ViewModel() {
     }
 
 
-    private fun performOperation(value: Double, operation: String) {
+    private fun performOperation(value: BigDecimal, operation: String) {
         if (operand1 == null) {
             operand1 = value
         } else {
@@ -62,8 +70,8 @@ class MyViewModel: ViewModel() {
 
             when (pendingOperation) {
                 "=" -> operand1 = value
-                "/" -> operand1 = if (value == 0.0) {
-                    Double.NaN   // handle attempt to divide by zero
+                "/" -> operand1 = if (value == BigDecimal.valueOf(0.0)) {
+                    BigDecimal.valueOf(Double.NaN)   // handle attempt to divide by zero
                 } else {
                     operand1!! / value
                 }
@@ -72,7 +80,7 @@ class MyViewModel: ViewModel() {
                 "+" -> operand1 = operand1!! + value
             }
         }
-        result.value = operand1.toString()
+        result.value = operand1!!
         newNumber.value = ""
     }
 

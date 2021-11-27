@@ -17,15 +17,15 @@ class MainActivity : AppCompatActivity() {
 
 
         val calculatorViewModel = ViewModelProviders.of(this).get(MyViewModel::class.java)
-        calculatorViewModel.newNumber.observe(this, {
+        calculatorViewModel.stringNewNumber.observe(this, {
             stringNumber -> newNumber.setText(stringNumber)
         })
 
-        calculatorViewModel.result.observe(this,{
+        calculatorViewModel.stringResult.observe(this,{
             stringResult -> result.setText(stringResult)
         })
 
-        calculatorViewModel.operation.observe(this,{
+        calculatorViewModel.stringOperation.observe(this,{
             stringOperation -> operation.text = stringOperation
         })
 
